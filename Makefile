@@ -6,7 +6,7 @@ PROGRAMS = $(MPI_PROGRAMS) $(TEST_PROGRAMS)
 OBJECTS = $(MPI_OBJECTS) xdmf_write.o xstring.o
 
 CC = gcc
-CC_ARGS = -std=c99 -I./
+CC_ARGS = -std=c99 -fgnu89-inline -I./
 CC_ARGS += -Ofast -march=native -Wall -Werror -Wpedantic -Wno-unknown-pragmas
 
 MPICC = mpicc

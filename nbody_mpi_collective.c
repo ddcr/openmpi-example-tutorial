@@ -2,9 +2,9 @@
 * @Author: Domingos Rodrigues <ddcr@lcc.ufmg.br>
 * @Date:   2019-06-28 15:00:08
 * @Last Modified by:   Domingos Rodrigues
-* @Last Modified time: 2019-06-28 15:29:06
+* @Last Modified time: 2019-07-01 07:09:26
 * File imported from:
-*        https://www.fz-juelich.de/SharedDocs/Downloads/IAS/JSC/EN/\
+*        https://www.fz-juelich.de/SharedDocs/Downloads/IAS/JSC/EN/
 *        slides/mpi/course-materials-mpi-openmp.zip?__blob=publicationFile
 */
 
@@ -308,7 +308,7 @@ void accelerations_calculate(particles targets) {
       sources_copy(targets, &sources);
       sources_bcast(&sources, i);
       accelerations_calculate_self(targets.count, targets.a.x, targets.a.y, targets.a.z, targets.x.x, targets.x.y, targets.x.z, targets.q);
-    } else {
+   } else {
       sources_bcast(&sources, i);
       accelerations_calculate_other(
           targets.count, targets.a.x, targets.a.y, targets.a.z, targets.x.x, targets.x.y, targets.x.z, targets.q,
