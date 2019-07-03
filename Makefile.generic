@@ -1,0 +1,84 @@
+SHELL=/bin/bash
+
+MODULE_LOAD_COMPILER = \
+  module load $(1) || true; \
+  echo === Compiler and version ===; \
+  $(2) --version
+
+MODULE_UNLOAD_COMPILER = \
+  module unload $(1) || true; \
+  echo === Compiler $(1) unloaded ===
+
+CC = gcc
+CXX = g++
+F77 = gfortran
+FC = gfortran
+
+CXX_ARGS = -std=c++11 -I./
+CXX_ARGS += -Ofast -march=native -Werror -Wpedantic -Wno-unknown-pragmas
+
+VARIANT=devtoolset-2
+# VARIANT=gnu/5.4.0
+# VARIANT=gnu7/7.2.0
+# VARIANT=intel/14.0.1
+
+CROSSCOMPILE=
+MODULE_LOAD_CXX=echo ==No modulefile==
+MODULE_UNLOAD_CXX=echo ==No modulefile=
+
+# Using docker (my laptop)
+ifeq ("$(VARIANT)", "docker")
+  CROSSCOMPILE=./centos5-devtoolset2-gcc4-local
+endif
+
+# Using RedHat software collections (cluster veredas)
+ifeq ("$(VARIANT)", "devtoolset-2")
+  CROSSCOMPILE=scl enable devtoolset-2 --
+endif
+
+# module load gnu/5.4.0 (cluster veredas)
+ifeq ("$(VARIANT)", "gnu/5.4.0")
+  MODULE_LOAD_CXX = $(call MODULE_LOAD_COMPILER, $(VARIANT), $(CXX))
+  MODULE_UNLOAD_CXX = $(call MODULE_UNLOAD_COMPILER, $(VARIANT), $(CXX))
+endif
+
+# module load gnu/7.2.0 (cluster veredas)
+ifeq ("$(VARIANT)", "gnu7/7.2.0")
+  MODULE_LOAD_CXX = $(call MODULE_LOAD_COMPILER, $(VARIANT), $(CXX))
+  MODULE_UNLOAD_CXX = $(call MODULE_UNLOAD_COMPILER, $(VARIANT), $(CXX))
+endif
+
+# module load intel/14.0.1 (cluster veredas: <random> acessible via GCC 4.8.2)
+ifeq ("$(VARIANT)", "intel/14.0.1")
+  CC = icc
+  CXX = icpc
+  F77 = ifort
+  FC = ifort
+  CXX_ARGS = -std=c++11 -I./
+  CXX_ARGS += -gcc-name=/usr/local/rh/devtoolset-2/root/usr/bin/gcc
+  CXX_ARGS += -O3 -xHost -Wno-unknown-pragmas
+  MODULE_LOAD_CXX = $(call MODULE_LOAD_COMPILER, $(VARIANT), $(CXX))
+  MODULE_UNLOAD_CXX = $(call MODULE_UNLOAD_COMPILER, $(VARIANT), $(CXX))
+endif
+
+PROGRAMS = myperctri2.x
+OBJECTS = myperctri2.o
+
+all:
+	( \
+	  $(MODULE_LOAD_CXX); \
+	  $(MAKE) $(PROGRAMS); \
+	  $(MODULE_UNLOAD_CXX); \
+	)
+
+$(PROGRAMS): %.x: %.o
+	$(CROSSCOMPILE) $(CXX) $(CXX_ARGS) -o $@ $^
+
+$(OBJECTS): %.o: %.cpp
+	touch $<
+	$(CROSSCOMPILE) $(CXX) -c $(CXX_ARGS) -o $@ $<
+
+.PHONY: clean
+
+clean:
+	-rm $(PROGRAMS) $(OBJECTS)
