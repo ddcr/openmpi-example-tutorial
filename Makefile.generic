@@ -9,6 +9,15 @@ MODULE_UNLOAD_COMPILER = \
   module unload $(1) || true; \
   echo === Compiler $(1) unloaded ===
 
+MODULE_LOAD_PACKAGE = \
+  module load $(1) || true; \
+  echo === $(2) ===; \
+  echo $${$(strip $(2))}
+
+MODULE_UNLOAD_PACKAGE = \
+  module unload $(1) || true; \
+  echo === $(1) unloaded ===
+
 CC = gcc
 CXX = g++
 F77 = gfortran
@@ -24,7 +33,7 @@ VARIANT=devtoolset-2
 
 CROSSCOMPILE=
 MODULE_LOAD_CXX=echo ==No modulefile==
-MODULE_UNLOAD_CXX=echo ==No modulefile=
+MODULE_UNLOAD_CXX=echo ==No modulefile==
 
 # Using docker (my laptop)
 ifeq ("$(VARIANT)", "docker")
@@ -39,13 +48,13 @@ endif
 # module load gnu/5.4.0 (cluster veredas)
 ifeq ("$(VARIANT)", "gnu/5.4.0")
   MODULE_LOAD_CXX = $(call MODULE_LOAD_COMPILER, $(VARIANT), $(CXX))
-  MODULE_UNLOAD_CXX = $(call MODULE_UNLOAD_COMPILER, $(VARIANT), $(CXX))
+  MODULE_UNLOAD_CXX = $(call MODULE_UNLOAD_COMPILER, $(VARIANT))
 endif
 
 # module load gnu/7.2.0 (cluster veredas)
 ifeq ("$(VARIANT)", "gnu7/7.2.0")
   MODULE_LOAD_CXX = $(call MODULE_LOAD_COMPILER, $(VARIANT), $(CXX))
-  MODULE_UNLOAD_CXX = $(call MODULE_UNLOAD_COMPILER, $(VARIANT), $(CXX))
+  MODULE_UNLOAD_CXX = $(call MODULE_UNLOAD_COMPILER, $(VARIANT))
 endif
 
 # module load intel/14.0.1 (cluster veredas: <random> acessible via GCC 4.8.2)

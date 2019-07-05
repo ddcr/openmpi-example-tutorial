@@ -2,7 +2,7 @@
 * @Author: Domingos Rodrigues <ddcr@lcc.ufmg.br>
 * @Date:   2019-06-28 15:00:08
 * @Last Modified by:   Domingos Rodrigues
-* @Last Modified time: 2019-07-01 07:09:26
+* @Last Modified time: 2019-07-05 04:57:58
 * File imported from:
 *        https://www.fz-juelich.de/SharedDocs/Downloads/IAS/JSC/EN/
 *        slides/mpi/course-materials-mpi-openmp.zip?__blob=publicationFile
@@ -27,6 +27,10 @@
 #include "xstring.h"
 #endif
 #include "xdmf_write.h"
+
+#ifndef MPI_UINT64_T
+#define MPI_UINT64_T MPI_UNSIGNED_LONG_LONG
+#endif
 
 typedef struct {
   double* x;
