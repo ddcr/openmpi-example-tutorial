@@ -1,8 +1,8 @@
 /*
 * @Author: Domingos Rodrigues <ddcr@lcc.ufmg.br>
 * @Date:   2019-06-28 11:32:45
-* @Last Modified by:   ddcr
-* @Last Modified time: 2019-06-28 12:39:33
+* @Last Modified by:   Domingos Rodrigues
+* @Last Modified time: 2019-07-07 23:54:05
 *
 * Routines imported from SLURM sources
 *  <https://www.schedmd.com>
@@ -205,12 +205,18 @@ void _xstrcat(char **str1, const char *str2)
 }
 
 
-#ifdef TEST_MAIN
+#ifdef TESTBED
+#include <sys/param.h>
+#include <unistd.h>
+
+
 int main(int argc, char const *argv[])
 {
     char *newroot;
     char *buf = NULL;
     char *filename = NULL;
+    char *env_val = NULL;
+    char *tmp;
 
     newroot = xstrdup("root");
     printf("newroot = %s\n", newroot);
@@ -220,8 +226,26 @@ int main(int argc, char const *argv[])
     xstrcat(buf, " Memory_Bind");
     printf("buf= %s\n", buf);
 
-    filename = xstrdup_printf("testfile%03d.dat", 2);
+    if ((env_val = getenv("TMPDIR"))) {
+        printf("TMPDIR has been set to: %s\n", env_val);
+        filename = xstrdup_printf("%s/testfile%03d.dat", env_val, 2);
+    } else {
+        printf("TMPDIR is not set!\n");
+        filename = xstrdup_printf("testfile%03d.dat", 2);
+    }
     printf("%s\n", filename);
+
+    tmp = malloc(PATH_MAX);
+    if ((tmp = getcwd(tmp, PATH_MAX)))
+        printf("getcwd set to :=>%s<=\n", tmp);
+    else
+        printf("getcwd failed\n");
+
+    // if ((tmp = get_current_dir_name()))
+    //     printf("getcwd set to :=>%s<=\n", tmp);
+    // else
+    //     printf("getcwd failed\n");
+
 
     return 0;
 }

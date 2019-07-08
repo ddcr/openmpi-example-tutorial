@@ -2,7 +2,7 @@
 * @Author: Domingos Rodrigues <ddcr@lcc.ufmg.br>
 * @Date:   2019-06-28 15:00:08
 * @Last Modified by:   Domingos Rodrigues
-* @Last Modified time: 2019-07-05 04:57:58
+* @Last Modified time: 2019-07-08 06:36:49
 * File imported from:
 *        https://www.fz-juelich.de/SharedDocs/Downloads/IAS/JSC/EN/
 *        slides/mpi/course-materials-mpi-openmp.zip?__blob=publicationFile
@@ -26,6 +26,12 @@
 #include <unistd.h>
 #include "xstring.h"
 #endif
+
+#ifdef TESTBED
+#include <sys/param.h>
+#include <unistd.h>
+#endif
+
 #include "xdmf_write.h"
 
 #ifndef MPI_UINT64_T
@@ -359,6 +365,10 @@ int main(int argc, char* argv[argc + 1]) {
   char filename[18];
 #ifdef TEST_SCRATCH
   char *filename_rank = NULL;
+  char *env_val = NULL;
+#endif
+#ifdef TESTBED
+  char *origdir;
 #endif
 
   for (size_t it = 0; it < nt; ++it) {
@@ -369,6 +379,14 @@ int main(int argc, char* argv[argc + 1]) {
 #ifdef TEST_SCRATCH
     filename_rank = xstrdup_printf("particles_%03zu.bin.proc%02zu", it, r);
     particles_to_file_per_proc(filename_rank, p);
+#endif
+
+#ifdef TESTBED
+    origdir = malloc(PATH_MAX);
+    if ((origdir = getcwd(origdir, PATH_MAX)))
+        printf("[Proc %02u] getcwd set to :=>%s<=\n", r, origdir);
+    else
+        printf("[Proc %02u] getcwd failed\n", r);
 #endif
 
     if (r == 0) { fprintf(stderr, "Working on step %zu... ", it + 1); fflush(stderr); }

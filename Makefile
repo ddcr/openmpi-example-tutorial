@@ -19,16 +19,16 @@ MODULE_UNLOAD_PACKAGE = \
   echo === $(1) unloaded ===
 
 COMPILER=
-COMPILERNAME=intel
+# COMPILERNAME=intel
 # COMPILERNAME=gnu       # gnu/5.4.0    (cluster veredas)
 # COMPILERNAME=gnu7      # gnu7/7.2.0   (cluster veredas)
 # COMPILERNAME=intel     # intel/14.0.1 (cluster veredas)
 
-# MPINAME=mpi
+MPINAME=mpi
 # MPINAME=openmpi
 # MPINAME=openmpi3
 # MPINAME=mvapich2
-MPINAME=impi
+# MPINAME=impi
 
 CC = gcc
 CXX = g++
@@ -55,7 +55,7 @@ else
   CC_ARGS = -std=c99 -fgnu89-inline -I./
   CC_ARGS += -Ofast -march=native -Wall -Werror -Wpedantic -Wno-unknown-pragmas
 endif
-MPICC_ARGS = $(CC_ARGS) -DTEST_SCRATCH
+MPICC_ARGS = $(CC_ARGS) -DTESTBED  # -DTEST_SCRATCH
 
 
 ifeq ("$(COMPILERNAME)", "docker")
@@ -99,7 +99,7 @@ $(MPI_OBJECTS): %.o: %.c
 	$(MPICC) -c $(MPICC_ARGS) -o $@ $<
 
 $(TEST_PROGRAMS): %.x: %.c
-	$(CC) -DTEST_MAIN $(CC_ARGS) -o $@ $< -lm
+	$(CC) -DTESTBED $(CC_ARGS) -o $@ $< -lm
 
 xdmf_write.o: %.o : %.c
 	$(CC) -c $(CC_ARGS) -o $@ $<
